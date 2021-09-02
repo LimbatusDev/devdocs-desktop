@@ -1,0 +1,51 @@
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Build-linux
+
+jobs:
+  build-linux:
+    name: Build Linux Release
+    runs-on: ubuntu-latest
+
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Installing nativefier
+        run: npm install nativefier -g
+
+      - name: Compiling to Linux
+        env:
+          DEVDOCS_LINK: "https://devdocs.io"
+        run: nativefier -p linux -a x64 --icon sources/icon.png -n DevDocs DEVDOCS_LINK --background-color "#333"
+
+      - name: Compress all releases files
+        # tar options:
+        # c Create new file
+        # z Filter the archive through gzip
+        # v verbose output
+        # f Use archive file
+        run: tar -czvf devdocs-linux-x64.tar.gz DevDocs-linux-x64 LICENSE installer.sh sources devdocs.desktop
+
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            LICENSE
+            devdocs-linux-x64.tar.gz
