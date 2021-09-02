@@ -1,0 +1,42 @@
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Build-win
+
+jobs:
+  build-windows:
+    name: Build Windows Release
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Installing nativefier
+        run: npm install nativefier -g
+
+      - name: Compiling to Windows
+        env:
+          DEVDOCS_LINK: "https://devdocs.io"
+        run: nativefier $DEVDOCS_LINK DevDocs-win32-x64 -p windows -a x64 --icon sources/icon.ico -n DevDocs --background-color "#333"
+
+      - name: Compress all releases files
+        run: tar.exe -a -c -f devdocs-windows-x64.zip DevDocs-win32-x64 LICENSE
+
+      - name: Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            devdocs-windows-x64.zip
