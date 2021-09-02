@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0.0
+Type=Application
+Terminal=false
+Exec=/opt/DevDocs-linux-x64/DevDocs
+Name=DevDocs
+Icon=/opt/DevDocs-linux-x64/resources/app/icon.png
+Comment=DevDocs combines multiple API documentations in a fast, organized, and searchable interface.
+Categories=Docs;Programming;
