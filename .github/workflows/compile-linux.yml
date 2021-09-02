@@ -32,7 +32,7 @@ jobs:
       - name: Compiling to Linux
         env:
           DEVDOCS_LINK: "https://devdocs.io"
-        run: nativefier -p linux -a x64 --icon sources/icon.png -n DevDocs DEVDOCS_LINK --background-color "#333"
+        run: nativefier -p linux -a x64 --icon sources/icon.png -n DevDocs $DEVDOCS_LINK --background-color "#333"
 
       - name: Compress all releases files
         # tar options:
